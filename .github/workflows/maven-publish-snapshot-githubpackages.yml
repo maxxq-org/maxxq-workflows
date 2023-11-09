@@ -1,0 +1,34 @@
+name: Deploy snapshot to github packages 
+
+# Run workflow when the workflow to check the quality is completed
+on:
+ workflow_call:
+    inputs:
+      java-version:
+        required: true
+        type: string
+      java-distribution:
+        required: true
+        type: string
+        default: 'temurin'
+      maven-deployment-repo:
+        required: true
+        type: string
+   
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v3
+        with:
+          java-version:  ${{ inputs.java-version }}
+          distribution: ${{ inputs.java-distribution }}
+      - name: Publish package
+        run: mvn --batch-mode deploy -DaltDeploymentRepository=${{ inputs.maven-deployment-repo }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
