@@ -32,3 +32,5 @@ jobs:
         run: mvn --batch-mode deploy -DaltDeploymentRepository=github::default::${{ inputs.maven-deployment-repo }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          gpg_private_key: ${{ secrets.gpg_private_key }}
+          gpg_passphrase: ${{ secrets.gpg_passphrase }}
