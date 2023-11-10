@@ -14,6 +14,11 @@ on:
       maven-deployment-repo:
         required: true
         type: string
+    secrets:
+      gpg_private_key:
+        required: true
+      gpg_passphrase:
+        required: true
    
 
 jobs:
