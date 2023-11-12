@@ -44,6 +44,8 @@ jobs:
           repositories: '[{"id":"awss3_snapshots","name":"AWS S3 Snapshots","url":"s3://repository.maven/snapshots","releases":{"enabled":"false"},"snapshots":{"enabled":"true"}}]'
           servers: '[{ "id": "awss3_snapshots", "username": "${env.MAVEN_S3_USER}", "password": "${env.MAVEN_S3_PASSWORD}" }]'
           output_file: .m2/settings.xml
+      - name: print settings.xml
+        run: cat .m2/settings.xml
       - name: Publish package
         run: mvn --batch-mode deploy -DaltDeploymentRepository=github::default::${{ inputs.maven-deployment-repo }}  --settings .m2/settings.xml
         env:
