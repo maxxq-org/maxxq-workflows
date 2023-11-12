@@ -40,7 +40,7 @@ jobs:
           gpg-private-key: ${{ secrets.gpg_private_key }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Publish package
-        run: mvn --batch-mode deploy -DaltDeploymentRepository=github::default::${{ inputs.maven-deployment-repo }} --settings ./settings.xml
+        run: mvn --batch-mode deploy -DaltDeploymentRepository=github::default::${{ inputs.maven-deployment-repo }} --settings maxxq-org/maxxq-worfklows/settings.xml@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.gpg_passphrase }}
