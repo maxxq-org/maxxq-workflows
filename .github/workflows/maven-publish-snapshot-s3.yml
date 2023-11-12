@@ -39,10 +39,15 @@ jobs:
           distribution: ${{ inputs.java-distribution }}
           gpg-private-key: ${{ secrets.gpg_private_key }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
+      - uses: whelk-io/maven-settings-xml-action@v20
+        with:
+          repositories: '[{"id":"awss3_snapshots","name":"AWS S3 Snapshots","url":"s3://repository.maven/snapshots","releases":{"enabled":"false"},"snapshots":{"enabled":"true"}}]'
+          servers: '[{ "id": "awss3_snapshots", "username": "${env.MAVEN_S3_USER}", "password": "${env.MAVEN_S3_PASSWORD}" }]'
+        env:
+          MAVEN_S3_USER: ${{ secrets.MAVEN_S3_USER }}
+          MAVEN_S3_PASSWORD: ${{ secrets.MAVEN_S3_PASSWORD }}
       - name: Publish package
-        run: mvn --batch-mode deploy -DaltDeploymentRepository=github::default::${{ inputs.maven-deployment-repo }} --settings ${{ github.workspace }}/settings.xml
+        run: mvn --batch-mode deploy -DaltDeploymentRepository=github::default::${{ inputs.maven-deployment-repo }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.gpg_passphrase }}
-          MAVEN_S3_USER: ${{ secrets.MAVEN_S3_USER }}
-          MAVEN_S3_PASSWORD: ${{ secrets.MAVEN_S3_PASSWORD }}
