@@ -1,0 +1,48 @@
+name: Deploy snapshot to github packages 
+
+# Run workflow when the workflow to check the quality is completed
+on:
+ workflow_call:
+    inputs:
+      java-version:
+        required: true
+        type: string
+      java-distribution:
+        required: true
+        type: string
+        default: 'temurin'
+      maven-deployment-repo:
+        required: true
+        type: string
+    secrets:
+      gpg_private_key:
+        required: true
+      gpg_passphrase:
+        required: true
+      MAVEN_S3_USER:
+        required: true
+      MAVEN_S3_PASSWORD:
+        required: true 
+   
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v3
+        with:
+          java-version:  ${{ inputs.java-version }}
+          distribution: ${{ inputs.java-distribution }}
+          gpg-private-key: ${{ secrets.gpg_private_key }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+      - name: Publish package
+        run: mvn --batch-mode deploy -DaltDeploymentRepository=github::default::${{ inputs.maven-deployment-repo }} --settings ./settings.xml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.gpg_passphrase }}
+          MAVEN_S3_USER: ${{ secrets.MAVEN_S3_USER }}
+          MAVEN_S3_PASSWORD: ${{ secrets.MAVEN_S3_PASSWORD }}

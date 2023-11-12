@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<settings xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 https://maven.apache.org/xsd/settings-1.2.0.xsd">
+	<pluginGroups>
+	</pluginGroups>
+
+	<mirrors>
+		<mirror>
+			<id>maven-default-http-blocker</id>
+			<mirrorOf>external:http:*</mirrorOf>
+			<name>Pseudo repository to mirror external repositories initially using HTTP.</name>
+			<url>http://0.0.0.0/</url>
+			<blocked>true</blocked>
+		</mirror>
+	</mirrors>
+
+	<profiles>
+		<profile>
+			<id>default</id>
+			<repositories>
+				<repository>
+					<id>central</id>
+					<url>https://repo1.maven.org/maven2</url>
+				</repository>
+				<repository>
+					<id>awss3_snapshots</id>
+					<url>s3://repository.maven/snapshots</url>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+					<releases>
+						<enabled>false</enabled>
+					</releases>
+				</repository>
+				<repository>
+					<id>awss3_releases</id>
+					<url>s3://repository.maven/releases</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+					<releases>
+						<enabled>true</enabled>
+					</releases>
+				</repository>
+			</repositories>
+		</profile>
+	</profiles>
+
+
+	<servers>
+		<server>
+			<id>ossrh</id>
+			<username>${env.NEXUS_USERNAME}</username>
+			<password>${env.NEXUS_PASSWORD}</password>
+		</server>
+		<server>
+			<id>awss3_snapshots</id>
+			<username>${env.MAVEN_S3_USER}</username>
+			<password>${env.MAVEN_S3_PASSWORD}</password>
+		</server>
+		<server>
+			<id>awss3_releases</id>
+			<username>${env.MAVEN_S3_USER}</username>
+			<password>${env.MAVEN_S3_PASSWORD}</password>
+		</server>
+	</servers>
+
+	<activeProfiles>
+		<activeProfile>default</activeProfile>
+	</activeProfiles>
+</settings>
