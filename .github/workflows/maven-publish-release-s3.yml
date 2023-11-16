@@ -23,7 +23,7 @@ on:
    
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
     permissions:
       contents: read
