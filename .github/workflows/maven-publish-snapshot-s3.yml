@@ -11,9 +11,6 @@ on:
         required: true
         type: string
         default: 'temurin'
-      maven-deployment-repo:
-        required: true
-        type: string
     secrets:
       gpg_private_key:
         required: true
@@ -47,7 +44,7 @@ jobs:
       - name: print settings.xml
         run: cat .m2/settings.xml
       - name: Publish package
-        run: mvn --batch-mode deploy -DaltDeploymentRepository=github::default::${{ inputs.maven-deployment-repo }}  --settings .m2/settings.xml
+        run: mvn --batch-mode deploy -DaltDeploymentRepository=github::default::s3://repository.maven/snapshots  --settings .m2/settings.xml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.gpg_passphrase }}
