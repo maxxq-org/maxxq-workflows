@@ -41,17 +41,11 @@ jobs:
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - uses: whelk-io/maven-settings-xml-action@v20
         with:
-          repositories: '[{"id":"awss3_snapshots","name":"AWS S3 Snapshots","url":"s3://repository.maven/snapshots","releases":{"enabled":"false"},"snapshots":{"enabled":"true"}}]'
-          servers: '[{ "id": "awss3_snapshots", "username": "${env.MAVEN_S3_USER}", "password": "${env.MAVEN_S3_PASSWORD}" }]'
+          repositories: '[{"id":"awss3_snapshots","name":"AWS S3 Snapshots","url":"s3://repository.maven/snapshots","releases":{"enabled":"false"},"snapshots":{"enabled":"true"}},{"id":"awss3_releases","name":"AWS S3 Releases","url":"s3://repository.maven/releases","releases":{"enabled":"true"},"snapshots":{"enabled":"false"}}]'
+          servers: '[{ "id": "awss3_snapshots", "username": "${env.MAVEN_S3_USER}", "password": "${env.MAVEN_S3_PASSWORD}" }, { "id": "awss3_releases", "username": "${env.MAVEN_S3_USER}", "password": "${env.MAVEN_S3_PASSWORD}" }]'
           output_file: .m2/settings.xml
       - name: print settings.xml
         run: cat .m2/settings.xml
-      - name: Write extensions.xml File
-        uses: DamianReeves/write-file-action@v1.2
-        with:
-          path: .mvn/extensions.xml
-          write-mode: overwrite
-          contents: <extensions xmlns="http://maven.apache.org/EXTENSIONS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/EXTENSIONS/1.0.0 http://maven.apache.org/xsd/core-extensions-1.0.0.xsd"><extension><groupId>com.github.seahen</groupId><artifactId>maven-s3-wagon</artifactId><version>1.3.3</version></extension></extensions>
       - name: Publish package
         run: mvn --batch-mode deploy -DaltDeploymentRepository=github::default::${{ inputs.maven-deployment-repo }}  --settings .m2/settings.xml
         env:
