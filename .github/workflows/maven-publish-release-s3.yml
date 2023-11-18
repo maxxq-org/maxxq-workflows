@@ -43,6 +43,7 @@ jobs:
         with:
           java-version:  ${{ inputs.java-version }}
           distribution: ${{ inputs.java-distribution }}
+          cache: 'maven'
           gpg-private-key: ${{ secrets.gpg_private_key }}
           gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - uses: whelk-io/maven-settings-xml-action@v20
