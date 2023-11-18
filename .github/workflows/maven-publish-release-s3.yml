@@ -65,7 +65,7 @@ jobs:
         id: get-version
         run: |
           VERSION=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout --settings .m2/settings.xml)
-          echo "::set-output name=version::$VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
       - name: Create Tag
         uses: negz/create-tag@v1
         with:
