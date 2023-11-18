@@ -12,9 +12,9 @@ on:
         type: string
         default: 'temurin'
     secrets:
-      gpg_private_key:
+      GPG_PRIVATE_KEY:
         required: true
-      gpg_passphrase:
+      GPG_PASSPHRASE:
         required: true
       MAVEN_S3_USER:
         required: true
