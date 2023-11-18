@@ -61,14 +61,11 @@ jobs:
           MAVEN_S3_PASSWORD: ${{ secrets.MAVEN_S3_PASSWORD }}
           AWS_ACCESS_KEY_ID: ${{ secrets.MAVEN_S3_USER }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.MAVEN_S3_PASSWORD }}
-      - name: Get version from pom.xml
+      - name: Get version
         id: get-version
-        uses: JActions/maven-version@v1.2.0
-        env:
-          MAVEN_S3_USER: ${{ secrets.MAVEN_S3_USER }}
-          MAVEN_S3_PASSWORD: ${{ secrets.MAVEN_S3_PASSWORD }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.MAVEN_S3_USER }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.MAVEN_S3_PASSWORD }}
+        run: |
+          VERSION=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
+          echo "::set-output name=version::$VERSION"
       - name: Create Tag
         uses: negz/create-tag@v1
         with:
