@@ -1,0 +1,32 @@
+name: Deploy snapshot to github packages 
+
+# Run workflow when the workflow to check the quality is completed
+on:
+ workflow_call:
+ 
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-java@v3
+        with:
+          java-version:  '17'
+          distribution: 'temurin'
+          
+      - name: Get version
+        id: get-version
+        run: |
+          VERSION=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout --settings .m2/settings.xml)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          
+      - name: Create Tag
+        uses: negz/create-tag@v1
+        with:
+          version: ${{ steps.get-version.outputs.version }}
+          message: Release version for ${{ steps.get-version.outputs.version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+      

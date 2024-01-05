@@ -1,0 +1,37 @@
+name: Deploy snapshot to github packages 
+
+# Run workflow when the workflow to check the quality is completed
+on:
+ workflow_call:
+    inputs:
+      java-version:
+        required: true
+        type: string
+      java-distribution:
+        required: true
+        type: string
+        default: 'temurin'
+    secrets:
+      gpg_private_key:
+        required: true
+      gpg_passphrase:
+        required: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-java@v3
+        with:
+          java-version:  ${{ inputs.java-version }}
+          distribution: ${{ inputs.java-distribution }}
+          gpg-private-key: ${{ secrets.gpg_private_key }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
+          
+      - name: Cache local Maven repository
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
