@@ -58,3 +58,6 @@ jobs:
     
     - name: Build with Maven on Java 17
       run: mvn -B verify --file pom.xml --settings .m2/settings.xml
+      env:
+        MAVEN_S3_USER: ${{ secrets.MAVEN_S3_USER }}
+        MAVEN_S3_PASSWORD: ${{ secrets.MAVEN_S3_PASSWORD }}
