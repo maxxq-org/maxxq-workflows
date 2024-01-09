@@ -16,6 +16,10 @@ on:
         required: true
       gpg_passphrase:
         required: true
+      MAVEN_S3_USER:
+        required: true
+      MAVEN_S3_PASSWORD:
+        required: true 
 
 jobs:
   release:
@@ -35,3 +39,12 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
+            
+      - uses: whelk-io/maven-settings-xml-action@v20
+        with:
+          repositories: '[{"id":"awss3_snapshots","name":"AWS S3 Snapshots","url":"s3://repository.maven/snapshots","releases":{"enabled":"false"},"snapshots":{"enabled":"true"}},{"id":"awss3_releases","name":"AWS S3 Releases","url":"s3://repository.maven/releases","releases":{"enabled":"true"},"snapshots":{"enabled":"false"}}]'
+          servers: '[{ "id": "awss3_snapshots", "username": "${env.MAVEN_S3_USER}", "password": "${env.MAVEN_S3_PASSWORD}" }, { "id": "awss3_releases", "username": "${env.MAVEN_S3_USER}", "password": "${env.MAVEN_S3_PASSWORD}" }]'
+          output_file: .m2/settings.xml
+          
+      - name: print settings.xml
+        run: cat .m2/settings.xml
