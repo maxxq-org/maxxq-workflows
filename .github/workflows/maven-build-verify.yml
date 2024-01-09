@@ -6,10 +6,15 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Build feature branch
+name: Maven build Verify
 
 on:
   workflow_call:
+    secrets:
+      MAVEN_S3_USER:
+        required: true
+      MAVEN_S3_PASSWORD:
+        required: true 
 
 jobs:
   build_java17:
@@ -18,11 +23,27 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Set up JDK 17
-      uses: maxxq-org/maxxq-workflows/.github/workflows/maven-setup-java.yml@main
+    - uses: actions/setup-java@v3
       with:
-        java-version: '17'
-        distribution: 'temurin'
+        java-version:  17
+        distribution: temurin
+          
+    - name: Cache local Maven repository
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+            
+    - uses: whelk-io/maven-settings-xml-action@v20
+      with:
+        repositories: '[{"id":"awss3_snapshots","name":"AWS S3 Snapshots","url":"s3://repository.maven/snapshots","releases":{"enabled":"false"},"snapshots":{"enabled":"true"}},{"id":"awss3_releases","name":"AWS S3 Releases","url":"s3://repository.maven/releases","releases":{"enabled":"true"},"snapshots":{"enabled":"false"}}]'
+        servers: '[{ "id": "awss3_snapshots", "username": "${env.MAVEN_S3_USER}", "password": "${env.MAVEN_S3_PASSWORD}" }, { "id": "awss3_releases", "username": "${env.MAVEN_S3_USER}", "password": "${env.MAVEN_S3_PASSWORD}" }]'
+        output_file: .m2/settings.xml
+          
+    - name: print settings.xml
+      run: cat .m2/settings.xml
     
     - name: Build with Maven on Java 17
       run: mvn -B verify --file pom.xml
@@ -33,11 +54,27 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Set up JDK 21
-      uses: maxxq-org/maxxq-workflows/.github/workflows/maven-setup-java.yml@main
+    - uses: actions/setup-java@v3
       with:
-        java-version: '21'
-        distribution: 'oracle'
-
+        java-version:  21
+        distribution: oracle
+          
+    - name: Cache local Maven repository
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+            
+    - uses: whelk-io/maven-settings-xml-action@v20
+      with:
+        repositories: '[{"id":"awss3_snapshots","name":"AWS S3 Snapshots","url":"s3://repository.maven/snapshots","releases":{"enabled":"false"},"snapshots":{"enabled":"true"}},{"id":"awss3_releases","name":"AWS S3 Releases","url":"s3://repository.maven/releases","releases":{"enabled":"true"},"snapshots":{"enabled":"false"}}]'
+        servers: '[{ "id": "awss3_snapshots", "username": "${env.MAVEN_S3_USER}", "password": "${env.MAVEN_S3_PASSWORD}" }, { "id": "awss3_releases", "username": "${env.MAVEN_S3_USER}", "password": "${env.MAVEN_S3_PASSWORD}" }]'
+        output_file: .m2/settings.xml
+          
+    - name: print settings.xml
+      run: cat .m2/settings.xml
+    
     - name: Build with Maven on Java 21
       run: mvn -B verify --file pom.xml
