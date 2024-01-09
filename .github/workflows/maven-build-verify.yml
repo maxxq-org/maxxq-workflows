@@ -55,4 +55,4 @@ jobs:
       run: cat .m2/settings.xml
     
     - name: Build with Maven on Java 17
-      run: mvn -B verify --file pom.xml
+      run: mvn -B verify --file pom.xml --settings .m2/settings.xml
