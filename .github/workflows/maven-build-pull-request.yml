@@ -10,6 +10,11 @@ name: Build pull requests
 
 on:
   workflow_call:
+    secrets:
+      MAVEN_S3_USER:
+        required: true
+      MAVEN_S3_PASSWORD:
+        required: true 
 
 jobs:
   build_java17:
