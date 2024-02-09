@@ -30,6 +30,16 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v4
+
+      - name: Get Java version with Maven
+        id: java_version
+        run: |
+          mvn help:evaluate -Dexpression=java.version -DforceStdout -q
+          echo "::set-output name=version::$(( steps.java_version.outputs.stdout ))"
+
+      - name: Print Java version
+        run: |
+          echo "Java version: ${{ steps.java_version.outputs.version }}"
       
       - uses: actions/setup-java@v3
         with:
