@@ -56,7 +56,7 @@ jobs:
     - name: print settings.xml
       run: cat .m2/settings.xml
     
-    - name: Build with Maven on Java 17
+    - name: Build with Maven on Java ${{ inputs.java-version }}
       run: mvn -B verify --file pom.xml --settings .m2/settings.xml
       env:
         MAVEN_S3_USER: ${{ secrets.MAVEN_S3_USER }}
