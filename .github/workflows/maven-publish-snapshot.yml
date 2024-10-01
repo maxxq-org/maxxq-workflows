@@ -14,6 +14,10 @@ on:
         required: true
         type: string
     secrets:
+      repo-username:
+        required: true
+      repo-password:
+        required: true
       gpg_private_key:
         required: true
       gpg_passphrase:
@@ -43,9 +47,43 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
+            
+      - uses: whelk-io/maven-settings-xml-action@v20
+        with:
+          repositories: |
+            [
+              {
+                "id": "central",
+                "name": "Maven Central",
+                "url": "https://repo1.maven.org/maven2",
+                "releases": {"enabled": "true"},
+                "snapshots": {"enabled": "false"}
+              },
+              {
+                "id": "repo",
+                "name": "Remote repo",
+                "url": "${{ inputs.maven-deployment-repo }}",
+                "releases": {"enabled": "true"},
+                "snapshots": {"enabled": "true"}
+              }
+            ]
+          servers: |
+            [
+              {
+                "id": "repo",
+                "username": "${env.REPO_USERNAME}",
+                "password": "${env.REPO_PASSWORD}"
+              }
+            ]
+          output_file: .m2/settings.xml
+
+      - name: print settings.xml
+        run: cat .m2/settings.xml
           
       - name: Publish package
-        run: mvn --batch-mode deploy -DaltDeploymentRepository=github::default::${{ inputs.maven-deployment-repo }}
+        run: mvn --batch-mode deploy -DaltDeploymentRepository=repo::default::${{ inputs.maven-deployment-repo }}  --settings .m2/settings.xml
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.gpg_passphrase }}
+          REPO_URL: ${{ inputs.maven-deployment-repo }}
+          REPO_USERNAME: ${{ secrets.repo-username }}
+          REPO_PASSWORD: ${{ secrets.repo-password }}
