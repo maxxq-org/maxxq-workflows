@@ -61,3 +61,4 @@ jobs:
       env:
         MAVEN_S3_USER: ${{ secrets.MAVEN_S3_USER }}
         MAVEN_S3_PASSWORD: ${{ secrets.MAVEN_S3_PASSWORD }}
+        NVD_API_KEY: ${{ secrets.NVD_API_KEY }}

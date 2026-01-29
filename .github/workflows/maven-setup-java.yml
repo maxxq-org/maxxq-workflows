@@ -19,7 +19,9 @@ on:
       MAVEN_S3_USER:
         required: true
       MAVEN_S3_PASSWORD:
-        required: true 
+        required: true
+      NVD_API_KEY:
+        required: true
 
 jobs:
   release:

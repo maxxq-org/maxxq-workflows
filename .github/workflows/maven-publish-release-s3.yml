@@ -1,6 +1,5 @@
 name: Deploy snapshot to github packages 
 
-# Run workflow when the workflow to check the quality is completed
 on:
  workflow_call:
     inputs:
@@ -19,9 +18,10 @@ on:
       MAVEN_S3_USER:
         required: true
       MAVEN_S3_PASSWORD:
-        required: true 
+        required: true
+      NVD_API_KEY:
+        required: true
    
-
 jobs:
   printJob:    
     name: Print event
@@ -67,11 +67,12 @@ jobs:
       - name: Publish package
         run: mvn --batch-mode deploy -DaltDeploymentRepository=github::default::s3://repository.maven/releases  --settings .m2/settings.xml
         env:
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.gpg_passphrase }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           MAVEN_S3_USER: ${{ secrets.MAVEN_S3_USER }}
           MAVEN_S3_PASSWORD: ${{ secrets.MAVEN_S3_PASSWORD }}
           AWS_ACCESS_KEY_ID: ${{ secrets.MAVEN_S3_USER }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.MAVEN_S3_PASSWORD }}
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
           
       - name: Get version
         id: get-version
